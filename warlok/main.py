@@ -54,6 +54,7 @@ def push():
     click.secho("TODO: process the message.", fg='yellow')
     click.secho("TODO: create pull-request.", fg='yellow')
     click.secho("TODO: set pull-request attributes based on the message.", fg='yellow')
+    click.secho("TODO: OR update an existing pull-request.", fg='green')
     click.secho("'push' not implemented yet.", fg='red')
 
 
