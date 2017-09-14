@@ -24,7 +24,8 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'gitpython==2.1.5',
-    'click==6.7'
+    'click==6.7',
+    'colorama==0.3.9',
 ]
 
 test_requirements = []

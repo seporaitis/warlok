@@ -1,7 +1,20 @@
 import os
+from contextlib import contextmanager
 
 import click
 import git
+
+
+@contextmanager
+def stash(repo):
+    dirty = repo.is_dirty()
+    if dirty:
+        repo.git.stash()
+
+    yield
+
+    if dirty:
+        repo.git.stash('pop')
 
 
 @click.command()
@@ -17,25 +30,46 @@ def feature(name, base):
     """
     repo_path = os.path.join(os.getcwd(), ".git")
     if not os.path.exists(repo_path):
-        click.echo("Run the command in repository root.", color='red')
+        click.secho("Run the command in repository root.", fg='red')
         return 1
-
-    if base is None:
-        base = "origin/master"
 
     repo = git.Repo(os.getcwd())
 
-    click.echo("'feature' not implemented yet.", color='red')
+    if base is None:
+        base = repo.head.commit
+
+    click.secho("TODO: check that '{}' exists on remote.".format(base))
+
+    with stash(repo):
+        # do something here
+        click.secho("TODO: checkout '{}'".format(base), fg='yellow')
+        click.secho("TODO: branch off '{}'".format(name), fg='yellow')
+
+    click.secho("'feature' not implemented yet.", fg='red')
 
 
 @click.command()
 def push():
-    click.echo("'push' not implemented yet.")
+    click.secho("TODO: launch $EDITOR with a warlok pull-request template.", fg='yellow')
+    click.secho("TODO: process the message.", fg='yellow')
+    click.secho("TODO: create pull-request.", fg='yellow')
+    click.secho("TODO: set pull-request attributes based on the message.", fg='yellow')
+    click.secho("'push' not implemented yet.", fg='red')
+
+
+@click.command()
+@click.argument('number')
+def pull(number):
+    click.secho("TODO: pull pull-request '{}' locally.".format(number), fg='yellow')
+    click.secho("TODO: checkout pull-request '{}' locally.".format(number), fg='yellow')
+    click.secho("'pull' not implemented yet.", fg='red')
 
 
 @click.command()
 def review():
-    click.echo("'review' not implemented yet.")
+    click.secho("TODO: print pull-requests waiting on user.", fg='yellow')
+    click.secho("TODO: print user pull-requests waiting on others.", fg='yellow')
+    click.secho("'review' not implemented yet.", fg='red')
 
 
 @click.group()
@@ -45,4 +79,5 @@ def main():
 
 main.add_command(feature)
 main.add_command(push)
+main.add_command(pull)
 main.add_command(review)

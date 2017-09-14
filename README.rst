@@ -21,6 +21,7 @@ Commands
 
 * ``wlk feature feature-name [base]`` - branch off for new feature
 * ``wlk push`` - push feature for review
+* ``wlk pull`` - pull a pull request locally
 * ``wlk review`` - list assigned pull requests
 * ``wlk review 10`` - open pull request #10 for review
 
