@@ -26,11 +26,37 @@ Commands
 * ``wlk review 10`` - open pull request #10 for review
 
 
-Example
--------
+Example Workflow
+----------------
 
-Some properties that can be accessed.
+Starting off a pull request:
 
-.. code-block:: python
+.. code-block:: bash
 
-    >>> import this
+    $ wlk feature new-feature
+    # change some files
+    $ git commit -m "Changed some files"
+    $ wlk push
+
+
+Continuing changes:
+
+.. code-block:: bash
+
+    $ git commit -m "More changes"
+    $ wlk push
+
+
+Checking code review status:
+
+.. code-block:: bash
+
+    $ wlk review
+
+    Waiting on You:
+      - #134    [review]   Changed some files.
+      - #12     [approved] Implemented a feature.
+
+    Waiting on Others:
+      - #122    [review]   Hotfix a bug.
+      - #44     [changes]  Implemented a big feature.
