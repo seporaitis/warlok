@@ -60,3 +60,10 @@ Checking code review status:
     Waiting on Others:
       - #122    [review]   Hotfix a bug.
       - #44     [changes]  Implemented a big feature.
+
+
+Limitations & Assumptions
+-------------------------
+
+* Single remote
+* TBD
