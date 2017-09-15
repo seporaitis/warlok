@@ -17,6 +17,21 @@ def stash(repo):
         repo.git.stash('pop')
 
 
+def get_repo_dir():
+    repo_path = os.path.join(os.getcwd(), ".git")
+    if not os.path.exists(repo_path):
+        click.secho("Run the command in repository root.", fg='red')
+        return None
+    return os.getcwd()
+
+
+def get_repo():
+    repo_path = get_repo_dir()
+    if repo_path:
+        return git.Repo(repo_path)
+    return None
+
+
 @click.command()
 @click.argument('name')
 @click.argument('base', required=False)
@@ -28,24 +43,23 @@ def feature(name, base):
     If BASE is not provided, defaults to the current branch.
 
     """
-    repo_path = os.path.join(os.getcwd(), ".git")
-    if not os.path.exists(repo_path):
-        click.secho("Run the command in repository root.", fg='red')
-        return 1
-
-    repo = git.Repo(os.getcwd())
+    repo = get_repo()
 
     if base is None:
-        base = repo.head.commit
+        base = "master"
 
-    click.secho("TODO: check that '{}' exists on remote.".format(base))
+    origin = repo.remotes.origin
+    origin.fetch()
+
+    if base not in origin.refs:
+        click.secho("'{}' not found in remote 'origin'. Did you forget to push it?".format(base), fg='red')
+        return 1
 
     with stash(repo):
-        # do something here
-        click.secho("TODO: checkout '{}'".format(base), fg='yellow')
-        click.secho("TODO: branch off '{}'".format(name), fg='yellow')
+        branch = repo.create_head(name, origin.refs[base].commit)
+        branch.checkout()
 
-    click.secho("'feature' not implemented yet.", fg='red')
+    return 0
 
 
 @click.command()
@@ -61,10 +75,13 @@ def push():
 @click.command()
 @click.argument('number')
 def pull(number):
-    click.secho("TODO: pull pull-request '{}' locally.".format(number), fg='yellow')
-    click.secho("TODO: checkout pull-request '{}' locally.".format(number), fg='yellow')
-    click.secho("'pull' not implemented yet.", fg='red')
+    repo = get_repo()
+    origin = repo.remotes.origin
+    fetch_info = origin.fetch('pull/{}/head'.format(number))
+    branch = repo.create_head("PR{}".format(number), fetch_info[0].commit)
+    branch.checkout()
 
+    return 0
 
 @click.command()
 def review():
