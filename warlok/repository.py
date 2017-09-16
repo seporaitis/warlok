@@ -15,5 +15,4 @@ def get_repository_dir(path):
         if os.path.exists(git_dir):
             return path
         path = path[:path.rfind("/")]
-        print("new path", path)
     raise RepositoryNotFoundError(RepositoryNotFoundMessage(original=original))
