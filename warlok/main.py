@@ -5,6 +5,11 @@ from subprocess import call
 import click
 import git
 
+from warlok.repository import (
+    get_repository_dir,
+    RepositoryNotFoundError,
+)
+
 
 @contextmanager
 def stash(repo):
@@ -18,19 +23,9 @@ def stash(repo):
         repo.git.stash('pop')
 
 
-def get_repo_dir():
-    repo_path = os.path.join(os.getcwd(), ".git")
-    if not os.path.exists(repo_path):
-        click.secho("Run the command in repository root.", fg='red')
-        return None
-    return os.getcwd()
-
-
 def get_repo():
-    repo_path = get_repo_dir()
-    if repo_path:
-        return git.Repo(repo_path)
-    return None
+    repo_path = get_repository_dir(os.getcwd())
+    return git.Repo(repo_path)
 
 
 @click.command()
@@ -44,7 +39,11 @@ def feature(name, base):
     If BASE is not provided, defaults to the current branch.
 
     """
-    repo = get_repo()
+    try:
+        repo = get_repo()
+    except RepositoryNotFoundError as err:
+        click.secho(str(err))
+        return 1
 
     if base is None:
         base = "master"
@@ -69,7 +68,12 @@ def push(base):
     """Updates remote branch and creates pull-request if necessary.
 
     """
-    repo = get_repo()
+    try:
+        repo = get_repo()
+    except RepositoryNotFoundError as err:
+        click.secho(str(err))
+        return 1
+    
     if base is None:
         base = "master"
 
