@@ -1,7 +1,5 @@
 import os
 
-import git
-
 
 RepositoryNotFoundMessage = "No git repository found in the path: {original}.".format
 

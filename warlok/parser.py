@@ -1,5 +1,4 @@
 import re
-from collections import defaultdict
 
 
 DuplicatedFieldMessage = "Field '{field}' occurs twice in the message.".format

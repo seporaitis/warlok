@@ -73,7 +73,7 @@ def push(base):
     except RepositoryNotFoundError as err:
         click.secho(str(err))
         return 1
-    
+
     if base is None:
         base = "master"
 
@@ -100,6 +100,7 @@ def push(base):
 
     return 0
 
+
 @click.command()
 @click.argument('number')
 def pull(number):
@@ -110,6 +111,7 @@ def pull(number):
     branch.checkout()
 
     return 0
+
 
 @click.command()
 def review():
