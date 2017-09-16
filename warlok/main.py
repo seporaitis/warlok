@@ -1,5 +1,6 @@
 import os
 from contextlib import contextmanager
+from subprocess import call
 
 import click
 import git
@@ -63,14 +64,37 @@ def feature(name, base):
 
 
 @click.command()
-def push():
-    click.secho("TODO: launch $EDITOR with a warlok pull-request template.", fg='yellow')
-    click.secho("TODO: process the message.", fg='yellow')
-    click.secho("TODO: create pull-request.", fg='yellow')
-    click.secho("TODO: set pull-request attributes based on the message.", fg='yellow')
-    click.secho("TODO: OR update an existing pull-request.", fg='green')
-    click.secho("'push' not implemented yet.", fg='red')
+@click.argument('base', required=False)
+def push(base):
+    """Updates remote branch and creates pull-request if necessary.
 
+    """
+    repo = get_repo()
+    if base is None:
+        base = "master"
+
+    branch = repo.head.ref.name
+    origin = repo.remotes.origin
+    base_exists = base in origin.refs
+
+    if not base_exists:
+        click.secho("Could not find 'origin/{}. Did you forget to push the base branch?".format(base))
+        return 1
+
+    push_info = origin.push(branch)[0]
+    if not ((push_info.flags & push_info.UP_TO_DATE)
+            or (push_info.flags & push_info.NEW_HEAD)
+            or (push_info.flags & push_info.FAST_FORWARD)):
+        click.secho("Failed pushing to 'origin/{}'.".format(branch), fg='red')
+        click.echo(push_info.summary)
+        return 1
+
+    click.secho("Pushed changes successfuly...", fg='green')
+
+    if push_info.flags & push_info.NEW_HEAD:
+        call(['hub', 'pull-request', '-h', branch, '-b', base])
+
+    return 0
 
 @click.command()
 @click.argument('number')
@@ -92,6 +116,7 @@ def review():
 
 @click.group()
 def main():
+    """An evil cousin to Arcanist. Command-line interface to GitHub."""
     pass
 
 
