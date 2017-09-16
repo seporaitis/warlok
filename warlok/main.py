@@ -62,6 +62,56 @@ def feature(name, base):
 
     return 0
 
+    # BELOW IS WORK IN PROGRESS / DRAFT
+
+    # TODO: get merge base
+    # TODO: push branch upstream
+    # TODO: if first commit
+    # TODO:     generate pull request template
+    # TODO:     get pull request message
+    # TODO:     create pull request
+    # TODO:     assign reviewers
+
+    TEMPLATE = """
+
+Summary:
+
+Reviewers:
+
+# Comment
+"""
+
+    editor = os.environ.get('EDITOR')
+    if not editor:
+        click.secho("Could not find 'EDITOR' environment variable. Make sure it is set.", fg='red')
+        return 1
+
+    #if branch not in origin.refs:
+    if True:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            commit_file = tmp_dir + "/commit_msg"
+            with open(commit_file, "w+") as f:
+                f.write(TEMPLATE)
+                f.flush()
+
+                call([os.environ.get('EDITOR', 'nano'), commit_file])
+
+                f.seek(0)
+                message = f.read()
+
+        title, rest = [x.strip("\n") for x in message.split("\n", 1)]
+        rest = "\n".join([x for x in rest.split("\n") if not x.startswith("#")])
+
+        summary = rest[rest.find("Summary:") + len("Summary:"):rest.find("Reviewers:")].strip(" \n")
+
+        reviewers = rest[rest.find("Reviewers:")+len("Reviewers:"):].replace("\n", " ").strip(" \n")
+        reviewers = [x.strip() for x in reviewers.split(",")]
+
+        print("Title: '{}'".format(title))
+        print("Summary: '{}'".format(summary))
+        print("Reviewers: '{}'".format(reviewers))
+
+
 
 @click.command()
 @click.argument('base', required=False)
