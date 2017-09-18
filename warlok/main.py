@@ -80,7 +80,7 @@ def push(base):
     branch = repo.head.ref.name
     origin = repo.remotes.origin
 
-    if base in origin.refs:
+    if base not in origin.refs:
         click.secho("Could not find 'origin/{}. Did you forget to push the base branch?".format(base))
         return 1
 
