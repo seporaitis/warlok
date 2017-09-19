@@ -72,6 +72,8 @@ Create a another feature on top of ``new-feature``:
 
 Behind the scenes this does:
 
+.. code-block:: bash
+
     $ git fetch origin
     $ git stash
     $ git checkout new-feature
