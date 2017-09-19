@@ -1,6 +1,42 @@
 import pytest
 
-from warlok.parser import parse_message_into_fields, DuplicatedFieldMessage
+from warlok.parser import (
+    get_message_template,
+    parse_message_into_fields,
+    DuplicatedFieldMessage
+)
+
+
+def test_get_message_template_empty():
+    result = get_message_template({'title': '', 'summary': '', 'reviewers': ''})
+
+    expected = """
+
+Summary:
+
+
+Reviewers:
+"""
+
+    assert result == expected
+
+
+def test_get_message_template_values():
+    result = get_message_template({
+        'title': 'title',
+        'summary': 'this is summary',
+        'reviewers': 'john, joe'
+    })
+
+    expected = """title
+
+Summary: this is summary
+
+
+Reviewers: john, joe
+"""
+
+    assert result == expected
 
 
 def test_parse_message_info_fields_empty():

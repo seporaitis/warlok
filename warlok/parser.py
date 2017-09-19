@@ -4,6 +4,18 @@ import re
 DuplicatedFieldMessage = "Field '{field}' occurs twice in the message.".format
 
 
+def get_message_template(fields):
+    message = []
+    title = ""
+    for field, value in fields.items():
+        if field == 'title':
+            title = value.strip("\n")
+        else:
+            message.append("{}: {}".format(field.title(), value).strip())
+
+    return (title + "\n\n" + "\n\n\n".join(message) + "\n")
+
+
 def parse_message_into_fields(message, fields):
     regex = re.compile("^(?P<field>{}):(?P<text>.*)$".format("|".join(x.title() for x in fields)))
     lines = message.split("\n")
