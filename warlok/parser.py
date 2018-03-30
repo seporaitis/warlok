@@ -1,24 +1,23 @@
 import re
 
-
-DuplicatedFieldMessage = "Field '{field}' occurs twice in the message.".format
+DuplicatedFieldMessage = 'Field "{field}" occurs twice in the message.'.format  # noqa
 
 
 def get_message_template(fields):
     message = []
-    title = ""
+    title = ''
     for field, value in fields.items():
         if field == 'title':
-            title = value.strip("\n")
+            title = value.strip('\n')
         else:
-            message.append("{}: {}".format(field.title(), value).strip())
+            message.append('{}: {}'.format(field.title(), value).strip())
 
-    return (title + "\n\n" + "\n\n\n".join(message) + "\n")
+    return (title + '\n\n' + '\n\n\n'.join(message) + '\n')
 
 
 def parse_message_into_fields(message, fields):
-    regex = re.compile("^(?P<field>{}):(?P<text>.*)$".format("|".join(x.title() for x in fields)))
-    lines = message.split("\n")
+    regex = re.compile('^(?P<field>{}):(?P<text>.*)$'.format('|'.join(x.title() for x in fields)))
+    lines = message.split('\n')
 
     field_name = 'title'
     seen = set()
@@ -28,7 +27,7 @@ def parse_message_into_fields(message, fields):
     for idx, line in enumerate(lines):
         if 'title' not in seen:
             field_name = 'title'
-            lines[idx] = line.replace("Title:", "").strip()
+            lines[idx] = line.replace('Title:', '').strip()
             seen.add('title')
         else:
             match = regex.match(line)
@@ -45,6 +44,6 @@ def parse_message_into_fields(message, fields):
         result[field_map[idx]].append(line)
 
     for field_name, content in result.items():
-        result[field_name] = "\n".join(content).strip(" \n")
+        result[field_name] = '\n'.join(content).strip(' \n')
 
     return result

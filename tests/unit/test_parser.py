@@ -1,9 +1,9 @@
 import pytest
 
 from warlok.parser import (
+    DuplicatedFieldMessage,
     get_message_template,
     parse_message_into_fields,
-    DuplicatedFieldMessage
 )
 
 
@@ -25,7 +25,7 @@ def test_get_message_template_values():
     result = get_message_template({
         'title': 'title',
         'summary': 'this is summary',
-        'reviewers': 'john, joe'
+        'reviewers': 'john, joe',
     })
 
     expected = """title
@@ -40,7 +40,7 @@ Reviewers: john, joe
 
 
 def test_parse_message_info_fields_empty():
-    result = parse_message_into_fields("", ['title', 'summary'])
+    result = parse_message_into_fields('', ['title', 'summary'])
 
     expected = {
         'title': '',
@@ -51,8 +51,8 @@ def test_parse_message_info_fields_empty():
 
 def test_parse_message_info_fields_title_implicit():
     result = parse_message_into_fields(
-        "This is title",
-        ['title', 'summary']
+        'This is title',
+        ['title', 'summary'],
     )
 
     expected = {
@@ -64,8 +64,8 @@ def test_parse_message_info_fields_title_implicit():
 
 def test_parse_message_info_fields_title_explicit():
     result = parse_message_into_fields(
-        "Title: This is title",
-        ['title', 'summary']
+        'Title: This is title',
+        ['title', 'summary'],
     )
 
     expected = {
@@ -88,7 +88,7 @@ line
 
 summary.
 """,
-        ['title', 'summary']
+        ['title', 'summary'],
     )
 
     expected = {
@@ -106,7 +106,7 @@ Summary: This is summary.
 
 Reviewers: john, jane
 """,
-        ['title', 'summary']
+        ['title', 'summary'],
     )
 
     expected = {
@@ -124,7 +124,7 @@ def test_parse_message_info_fields_title_duplicate():
 Summary: This is summary.
 Summary: Another summary.
 """,
-            ['title', 'summary']
+            ['title', 'summary'],
         )
 
-    assert str(err.value) == DuplicatedFieldMessage(field="Summary")
+    assert str(err.value) == DuplicatedFieldMessage(field='Summary')
