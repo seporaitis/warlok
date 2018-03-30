@@ -4,11 +4,10 @@ import tempfile
 from warlok.config import get_or_create_config
 
 
-def test_get_or_create_config():
-    with tempfile.TemporaryDirectory() as dir_name:
-        config = get_or_create_config(dir_name)
+def test_get_or_create_config(temp_dir):
+    config = get_or_create_config(temp_dir)
 
-        assert os.path.exists(os.path.join(dir_name, "config"))
+    assert os.path.exists(os.path.join(temp_dir, "config"))
 
     assert config is not None
 
@@ -27,7 +26,7 @@ def test_get_or_create_config_create_dir():
     assert not os.path.exists(dir_name)
 
 
-def test_get_or_create_config_callback():
+def test_get_or_create_config_callback(temp_dir):
     data = {
         'github.com': {
             'username': 'seporaitis',
@@ -35,14 +34,13 @@ def test_get_or_create_config_callback():
         }
     }
 
-    with tempfile.TemporaryDirectory() as dir_name:
-        config = get_or_create_config(dir_name, callback=lambda: data)
+    config = get_or_create_config(temp_dir, callback=lambda: data)
 
     assert config['github.com']['username'] == 'seporaitis'
     assert config['github.com']['token'] == '1234567890'
 
 
-def test_get_or_create_config_does_not_overwrite():
+def test_get_or_create_config_does_not_overwrite(temp_dir):
     data1 = {
         'github.com': {
             'username': 'seporaitis',
@@ -57,9 +55,8 @@ def test_get_or_create_config_does_not_overwrite():
         }
     }
 
-    with tempfile.TemporaryDirectory() as dir_name:
-        get_or_create_config(dir_name, callback=lambda: data1)
-        config = get_or_create_config(dir_name, callback=lambda: data2)
+    get_or_create_config(temp_dir, callback=lambda: data1)
+    config = get_or_create_config(temp_dir, callback=lambda: data2)
 
     assert config['github.com']['username'] == 'seporaitis'
     assert config['github.com']['token'] == '1234567890'
