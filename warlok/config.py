@@ -2,6 +2,8 @@ import errno
 import os
 from configparser import ConfigParser
 
+import yaml
+
 
 def get_or_create_config(dir_name, file_name='config', callback=None):
     """Get (or create) an instance of ConfigParser.
@@ -54,3 +56,24 @@ def get_or_create_config(dir_name, file_name='config', callback=None):
                 config.write(file_)
 
     return config
+
+
+def get_hub_config():
+    """Try to import configuration from `hub` command line tool.
+
+    `hub` is Github native command line tool that Warlok was "piggybacking" on
+    in the beginning, so why not just reuse it's credentials - if they're
+    found.
+
+    Returns: dictionary in the format specified in `get_or_create_config`.
+    """
+    path = '~/.config/hub'
+    if not os.path.exists(path):
+        return None
+
+    try:
+        data = yaml.load(open(path, 'r'))
+    except yaml.YAMLError as err:
+        return None
+
+    return data

@@ -13,3 +13,4 @@ pytest
 tox
 watchdog
 wheel
+testfixtures
