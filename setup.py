@@ -22,13 +22,6 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
-requirements = [
-    'gitpython==2.1.5',
-    'click==6.7',
-    'colorama==0.3.9',
-]
-
-test_requirements = []
 
 setup(
     name='warlok',
@@ -43,7 +36,6 @@ setup(
         'warlok': 'warlok',
     },
     include_package_data=True,
-    install_requires=requirements,
     license="MIT",
     zip_safe=False,
     keywords='python',
@@ -60,5 +52,4 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     test_suite='tests',
-    tests_require=test_requirements
 )

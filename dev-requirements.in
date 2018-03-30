@@ -1,0 +1,15 @@
+bumpversion
+coverage
+flake8
+flake8-commas
+flake8-tuple
+flake8-comprehensions
+flake8-print
+flake8-quotes
+flake8-tidy-imports
+isort
+pip-tools
+pytest
+tox
+watchdog
+wheel
