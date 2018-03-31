@@ -4,6 +4,7 @@ from warlok.repository import (
     RepositoryNotFoundError,
     RepositoryNotFoundMessage,
     get_repository_dir,
+    get_repository_full_name,
 )
 
 
@@ -44,3 +45,14 @@ def test_get_repository_dir_windows(os_path_exists_mock):
 
     assert path == 'c:/home/warlok/repo'
     assert os_path_exists_mock.call_count == 2
+
+
+def test_get_repository_full_name_success():
+    actual = get_repository_full_name('git@github.com:seporaitis/warlok.git')
+
+    assert actual == 'seporaitis/warlok'
+
+
+def test_get_repository_full_name_indexerror():
+    with pytest.raises(AttributeError):
+        get_repository_full_name('https://github.com/seporaitis/warlok')

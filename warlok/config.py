@@ -51,7 +51,9 @@ def get_or_create_config(dir_name, file_name='config', callback=None):
         raw = callback()
         if raw:
             for section_name, options in raw.items():
-                config[section_name] = options
+                config.add_section(section_name)
+                for option_name, value in options.items():
+                    config[section_name][option_name] = value
             with open(file_path, 'w') as file_:
                 config.write(file_)
 
@@ -67,7 +69,8 @@ def get_hub_config():
 
     Returns: dictionary in the format specified in `get_or_create_config`.
     """
-    path = '~/.config/hub'
+
+    path = os.path.join(os.path.expanduser('~'), '.config/hub')
     if not os.path.exists(path):
         return None
 
@@ -76,4 +79,10 @@ def get_hub_config():
     except yaml.YAMLError as err:
         return None
 
-    return data
+    config = {}
+    for section_name, options in data.items():
+        config[section_name] = {}
+        for option_name, value in options[0].items():
+            config[section_name][option_name] = value
+
+    return config

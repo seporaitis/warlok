@@ -1,28 +1,16 @@
-import os
-from contextlib import contextmanager
-from subprocess import call
+import os.path
 
 import click
-import git
+import github
 
-from warlok.repository import RepositoryNotFoundError, get_repository_dir
-
-
-@contextmanager
-def stash(repo):
-    dirty = repo.is_dirty()
-    if dirty:
-        repo.git.stash()
-
-    yield
-
-    if dirty:
-        repo.git.stash('pop')
-
-
-def get_repo():
-    repo_path = get_repository_dir(os.getcwd())
-    return git.Repo(repo_path)
+from warlok.config import get_hub_config, get_or_create_config
+from warlok.parser import get_message_template, parse_message_into_fields
+from warlok.repository import (
+    RepositoryNotFoundError,
+    get_repository,
+    get_repository_full_name,
+    stash,
+)
 
 
 @click.command()
@@ -37,7 +25,7 @@ def feature(name, base):
 
     """
     try:
-        repo = get_repo()
+        repo = get_repository()
     except RepositoryNotFoundError as err:
         click.secho(str(err))
         return 1
@@ -66,7 +54,7 @@ def push(base):
 
     """
     try:
-        repo = get_repo()
+        repo = get_repository()
     except RepositoryNotFoundError as err:
         click.secho(str(err))
         return 1
@@ -92,7 +80,28 @@ def push(base):
     click.secho('Pushed changes successfuly...', fg='green')
 
     if push_info.flags & push_info.NEW_HEAD:
-        call(['hub', 'pull-request', '-h', branch, '-b', base])
+        dir_name = os.path.join(os.path.expanduser('~'), '.config')
+        config = get_or_create_config(dir_name, 'warlok', get_hub_config)
+        hub = github.Github(config['github.com'].get('oauth_token'))
+        hub_repo = hub.get_repo(get_repository_full_name(origin.url))
+
+        message = click.edit(get_message_template({
+            'title': '',
+            'summary': '',
+            'reviewers': '',
+        }))
+
+        fields = parse_message_into_fields(
+            message,
+            ('title', 'summary', 'reviewers'),
+        )
+
+        hub_repo.create_pull(
+            title=fields['title'],
+            body=fields['summary'],
+            base=base,
+            head=branch,
+        )
 
     return 0
 
@@ -100,7 +109,7 @@ def push(base):
 @click.command()
 @click.argument('number')
 def pull(number):
-    repo = get_repo()
+    repo = get_repository()
     origin = repo.remotes.origin
     fetch_info = origin.fetch(f'pull/{number}/head')
     branch = repo.create_head(f'PR{number}', fetch_info[0].commit)

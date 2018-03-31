@@ -1,6 +1,6 @@
 import re
 
-DuplicatedFieldMessage = 'Field "{field}" occurs twice in the message.'.format  # noqa
+DuplicatedFieldMessage = 'Field "{field}" occurs twice in the message.'.format
 
 
 def get_message_template(fields):

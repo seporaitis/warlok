@@ -8,5 +8,7 @@ click==6.7
 colorama==0.3.9
 gitdb2==2.0.3             # via gitpython
 gitpython==2.1.9
+pygithub==1.38
+pyjwt==1.6.1              # via pygithub
 pyyaml==3.12
 smmap2==2.0.3             # via gitdb2

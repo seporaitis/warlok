@@ -1,4 +1,5 @@
 import io
+import os.path
 from unittest import mock
 
 import yaml
@@ -10,6 +11,19 @@ def test_get_hub_config_success(os_path_exists_mock,
                                 builtins_open_mock):
     os_path_exists_mock.return_value = True
 
+    config = {
+        'github.com': [{
+            'username': 'seporaitis',
+            'oauth_token': '0123456789',
+        }],
+    }
+
+    stream = io.StringIO()
+    stream.write(yaml.dump(config))
+    stream.seek(0)
+
+    builtins_open_mock.return_value = stream
+
     expected = {
         'github.com': {
             'username': 'seporaitis',
@@ -17,16 +31,11 @@ def test_get_hub_config_success(os_path_exists_mock,
         },
     }
 
-    stream = io.StringIO()
-    stream.write(yaml.dump(expected))
-    stream.seek(0)
-
-    builtins_open_mock.return_value = stream
-
     assert get_hub_config() == expected
 
+    home_dir = os.path.expanduser('~')
     builtins_open_mock.assert_has_calls([
-        mock.call('~/.config/hub', 'r'),
+        mock.call(os.path.join(home_dir, '.config/hub'), 'r'),
     ])
 
 
@@ -49,8 +58,9 @@ def test_get_hub_config_yaml_error(os_path_exists_mock,
 
     assert get_hub_config() is None
 
+    home_dir = os.path.expanduser('~')
     builtins_open_mock.assert_has_calls([
-        mock.call('~/.config/hub', 'r'),
+        mock.call(os.path.join(home_dir, '.config/hub'), 'r'),
     ])
 
     yaml_load_mock.assert_called_once()
