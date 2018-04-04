@@ -106,7 +106,7 @@ def push(base):
 
         patch_pull_request(pull_request)
 
-        reviewers = [x.strip() for x in fields['reviewers'].split(",")]
+        reviewers = [x.strip() for x in fields['reviewers'].split(',')]
         try:
             pull_request.create_review_request(reviewers=reviewers)
         except github.GithubException as err:
