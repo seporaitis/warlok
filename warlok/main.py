@@ -5,6 +5,7 @@ import github
 
 from warlok.config import get_hub_config, get_or_create_config
 from warlok.parser import get_message_template, parse_message_into_fields
+from warlok.patches import patch_pull_request
 from warlok.repository import (
     RepositoryNotFoundError,
     get_repository,
@@ -96,12 +97,19 @@ def push(base):
             ('title', 'summary', 'reviewers'),
         )
 
-        hub_repo.create_pull(
+        pull_request = hub_repo.create_pull(
             title=fields['title'],
             body=fields['summary'],
             base=base,
             head=branch,
         )
+
+        patch_pull_request(pull_request)
+
+        reviewers = [x.strip() for x in fields['reviewers'].split(",")]
+        headers, data = pull_request.create_review_request(reviewers=reviewers)
+        print(headers)
+        print(data)
 
     return 0
 
