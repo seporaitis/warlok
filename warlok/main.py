@@ -107,9 +107,10 @@ def push(base):
         patch_pull_request(pull_request)
 
         reviewers = [x.strip() for x in fields['reviewers'].split(",")]
-        headers, data = pull_request.create_review_request(reviewers=reviewers)
-        print(headers)
-        print(data)
+        try:
+            pull_request.create_review_request(reviewers=reviewers)
+        except github.GithubException as err:
+            click.secho(err.data['message'], fg='red')
 
     return 0
 

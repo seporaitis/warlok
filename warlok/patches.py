@@ -1,3 +1,7 @@
+import types
+from github import PullRequest
+
+
 def _create_review_request_patch(self, reviewers, team_reviewers=None):
     """
     :calls: `POST /repos/:owner/:repo/pulls/:number/reviews <https://developer.github.com/v3/pulls/reviews/>`_
@@ -6,7 +10,6 @@ def _create_review_request_patch(self, reviewers, team_reviewers=None):
     :rtype: tuple(headers, data)
     """
     assert isinstance(reviewers, list), reviewers
-    assert isinstance(team_reviewers, list), team_reviewers
     post_parameters = {
         'reviewers': reviewers,
         'team_reviewers': team_reviewers or [],
@@ -24,4 +27,4 @@ def patch_pull_request(pull_request):
 
     assert not hasattr(pull_request, 'create_review_request')
 
-    setattr(pull_request, 'create_review_request', _create_review_request_patch)
+    pull_request.create_review_request = _create_review_request_patch.__get__(pull_request)
